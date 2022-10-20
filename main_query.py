@@ -1,11 +1,11 @@
 MainQuery = """
-query($ts: DateTime) {
+query($ts: DateTime, $noGasData: Boolean = false) {
     graphTs: getGraphs(ts: $ts) { ts }
     
     peopleOccupationIcons: getStorageRecord(id: "people-occupation-icons") { value }
     vehicleTypeIcons: getStorageRecord(id: "vehicle-type-icons") { value }
 
-    loc_devices: getDevices(ts: $ts, filter: { type: { include: [TAG, SENTRY] } }) {
+    devices: getDevices(ts: $ts, filter: { type: { include: [TAG, SENTRY, GATEWAY, RETRANSLATOR] } }) {
         ...Device
         location {
             ...Location
@@ -13,9 +13,6 @@ query($ts: DateTime) {
         carrier {
             ...Carrier
         }
-    }
-    ap_devices: getDevices(ts: $ts, filter: { type: { include: [GATEWAY, RETRANSLATOR] } }) {
-        ...Device
     }
 
     virtualDevices: getVirtualDevices(ts: $ts) {
@@ -46,16 +43,16 @@ fragment Device on Device {
 
     attrs : attrs_raw
 
-    GAS_CH4: sensor(type: GAS_CH4) {
+    GAS_CH4: sensor(type: GAS_CH4) @skip(if: $noGasData) {
         ... on Sensor_GAS_CH4 { value }
     } 
-    GAS_CO: sensor(type: GAS_CO) {
+    GAS_CO: sensor(type: GAS_CO) @skip(if: $noGasData) {
         ... on Sensor_GAS_CO { value }
     } 
-    GAS_CO2: sensor(type: GAS_CO2) {
+    GAS_CO2: sensor(type: GAS_CO2) @skip(if: $noGasData) {
         ... on Sensor_GAS_CO2 { value }
     } 
-    GAS_O2: sensor(type: GAS_O2) {
+    GAS_O2: sensor(type: GAS_O2) @skip(if: $noGasData) {
         ... on Sensor_GAS_O2 { value }
     }
 }

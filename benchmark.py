@@ -12,7 +12,8 @@ def run_query(url: str, query: str, variables = None) -> str:
         raise Exception(f"Unexpected status code returned: {request.status_code}")
 
 vars = {
-    'ts': '2022-10-14T12:00:00.000Z'    # Archive date
+    'noGasData': True,
+    'ts': '2022-10-14T05:00:00.000Z'    # Archive date
 }
 
 startTs = timer()
