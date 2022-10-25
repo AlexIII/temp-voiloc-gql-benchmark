@@ -1,5 +1,5 @@
 MainQuery = """
-query($ts: DateTime, $noGasData: Boolean = false) {
+query($ts: DateTime) {
     graphTs: getGraphs(ts: $ts) { ts }
     
     peopleOccupationIcons: getStorageRecord(id: "people-occupation-icons") { value }
@@ -18,6 +18,16 @@ query($ts: DateTime, $noGasData: Boolean = false) {
     virtualDevices: getVirtualDevices(ts: $ts) {
         ...VDevice
         carrier_id
+    }
+
+    getSensors(ts: $ts, filter: {type: {include: [GAS_O2, GAS_CO, GAS_CH4, GAS_CO2]}}) {
+        ts
+        mac
+        type
+        ...on Sensor_GAS_CH4 { value }
+        ...on Sensor_GAS_CO { value }
+        ...on Sensor_GAS_CO2 { value }
+        ...on Sensor_GAS_O2 { value }
     }
 }
 
@@ -42,19 +52,6 @@ fragment Device on Device {
     battery { voltage, voltage_int }
 
     attrs : attrs_raw
-
-    GAS_CH4: sensor(type: GAS_CH4) @skip(if: $noGasData) {
-        ... on Sensor_GAS_CH4 { value }
-    } 
-    GAS_CO: sensor(type: GAS_CO) @skip(if: $noGasData) {
-        ... on Sensor_GAS_CO { value }
-    } 
-    GAS_CO2: sensor(type: GAS_CO2) @skip(if: $noGasData) {
-        ... on Sensor_GAS_CO2 { value }
-    } 
-    GAS_O2: sensor(type: GAS_O2) @skip(if: $noGasData) {
-        ... on Sensor_GAS_O2 { value }
-    }
 }
 
 fragment Location on Location {
